@@ -1,11 +1,13 @@
 const config = require('./config'),
   express = require('express'),
-  morgan = require('morgan');
+  morgan = require('morgan'),
+  bodyParser = require('body-parser');
 
 module.exports = () => {
   const app = express();
 
   app.use(morgan('dev'));
+  app.use(bodyParser.json());
 
   app.set('views', './app/views');
   app.set('view engine', 'ejs');
