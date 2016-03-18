@@ -1,5 +1,4 @@
-const config = require('./config'),
-  express = require('express'),
+const express = require('express'),
   morgan = require('morgan'),
   bodyParser = require('body-parser');
 
