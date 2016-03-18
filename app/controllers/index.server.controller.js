@@ -3,7 +3,8 @@ const redis = require('redis');
 const pmongo = require('promised-mongo');
 
 
-const db = pmongo('192.168.99.100/db', ['device_sessions', 'maps']);
+const mongoURI = process.env.MONGOLAB_URI ? process.env.MONGOLAB_URI : '192.168.99.100/db';
+const db = pmongo(mongoURI, ['device_sessions', 'maps']);
 const walkingSpeed = 1.38582;
 const degreesPerRadian = 0.0174533;
 
