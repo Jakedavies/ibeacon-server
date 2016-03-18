@@ -1,3 +1,4 @@
+'use strict';
 const redis = require('redis');
 const pmongo = require('promised-mongo');
 
