@@ -50,6 +50,8 @@ exports.render = (req, res) => {
       console.log(thisDeviceEntry.beacons);
       const beaconInRange = thisDeviceEntry.beacons[0];
       const beacon = map.beacons.filter(thisBeacon => thisBeacon.major === beaconInRange.major)[0];
+      console.log('selected beacon');
+      console.log(beacon);
       const elapsedTime = (Date.now() - thisDeviceEntry.date) / 1000;
       const vector = timeHeadingVector(thisDeviceEntry.heading, elapsedTime);
       if (deviceEntries.length > 1) {
