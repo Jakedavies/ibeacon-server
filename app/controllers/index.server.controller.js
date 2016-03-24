@@ -44,10 +44,10 @@ exports.render = (req, res) => {
       ]);
     })
     .then(result => {
-      console.log(result);
       const map = result[0][0];
       const deviceEntries = result[1];
       const thisDeviceEntry = deviceEntries[0];
+      console.log(thisDeviceEntry.beacons);
       const beaconInRange = thisDeviceEntry.beacons[0];
       const beacon = map.beacons.filter(thisBeacon => thisBeacon.major === beaconInRange.major)[0];
       const elapsedTime = (Date.now() - thisDeviceEntry.date) / 1000;
