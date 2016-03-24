@@ -47,7 +47,10 @@ exports.render = (req, res) => {
       const map = result[0][0];
       const deviceEntries = result[1];
       const thisDeviceEntry = deviceEntries[0];
+      console.log('device beacons');
       console.log(thisDeviceEntry.beacons);
+      console.log('map beacons');
+      console.log(map.beacons);
       const beaconInRange = thisDeviceEntry.beacons[0];
       const beacon = map.beacons.filter(thisBeacon => thisBeacon.major === beaconInRange.major)[0];
       console.log('selected beacon');
