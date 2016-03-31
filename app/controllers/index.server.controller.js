@@ -16,12 +16,12 @@ const getConnection = function getConnection(){
   return MongoClient.connect(url);
 };
 
-const walkingSpeed = 1.38582;
+const walkingSpeed = 13.8582;
 const degreesPerRadian = 0.0174533;
 
 const timeHeadingVector = function timeHeadingVector(heading, elapsedTime) {
   const headingInRadians = heading / degreesPerRadian;
-  const distanceScaler = walkingSpeed * elapsedTime/1000;
+  const distanceScaler = walkingSpeed * elapsedTime / 1000;
   console.log(headingInRadians);
   const vector = [
     Math.cos(headingInRadians) * distanceScaler,
@@ -29,9 +29,9 @@ const timeHeadingVector = function timeHeadingVector(heading, elapsedTime) {
   ];
   return vector;
 };
-const findBeacon = function findBeacon(map, beacon){
+const findBeacon = function findBeacon(map, beacon) {
    return map.beacons.filter(thisBeacon => thisBeacon.major == beacon.major)[0];
-}
+};
 exports.render = (req, res) => {
   const heading = req.body.heading;
   const beacons = req.body.beacons;
