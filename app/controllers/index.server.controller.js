@@ -15,18 +15,24 @@ const getConnection = function getConnection(){
   const url = process.env.MONGOLAB_URI || 'mongodb://localhost:27017/db';
   return MongoClient.connect(url);
 };
+const within = function(current, goal, range){
+  if(current > (goal + range)) return false;
+  if(current < (goal - range)) return false;
+}
 
-const walkingSpeed = 13.8582;
+const walkingSpeed = 7.00;
 const degreesPerRadian = 0.0174533;
 
 const timeHeadingVector = function timeHeadingVector(heading, elapsedTime) {
-  const headingInRadians = heading / degreesPerRadian;
+  const headingInRadians = heading * degreesPerRadian;
   const distanceScaler = walkingSpeed * elapsedTime / 1000;
-  console.log(headingInRadians);
+  console.log('heading in radians',  headingInRadians);
   const vector = [
-    Math.cos(headingInRadians) * distanceScaler,
     Math.sin(headingInRadians) * distanceScaler,
+    -1 * Math.cos(headingInRadians) * distanceScaler,
   ];
+  console.log('vector');
+  console.log(vector);
   return vector;
 };
 const findBeacon = function findBeacon(map, beacon) {
@@ -65,39 +71,51 @@ exports.render = (req, res) => {
       const positionPromise = new Promise((resolve, reject) => {
         if (deviceEntries.length > 1) {
           console.log('size is > 1');
-          // we just switched beacons
           const lastEntry = deviceEntries[1];
-          if (lastEntry.beacons[0].major != thisDeviceEntry.beacons[0].major) {
-            console.log('beacon swithced');
-            const oldPos = findBeacon(map, lastEntry.beacons[0]);
-            const newPos = findBeacon(map, thisDeviceEntry.beacons[1]);
-            console.log('old');
-            console.log(oldPos);
-            console.log('new');
-            console.log(newPos);
-            return resolve({
-              x: oldPos.x + (newPos.x - oldPos.x) / 2,
-              y: oldPos.y + (newPos.y - oldPos.y) / 2,
-            });
-          }
-          // use formula heading *  timeSinceLastReading;
           return db.collection('positions').find({ uuid: uuid })
           .sort({ date: -1 }).limit(1).toArray().then(positions => {
+            // if the beacon switched
+            const half = {};
+            // if (lastEntry.beacons[0].major != thisDeviceEntry.beacons[0].major) {
+            //   console.log('beacon swithced');
+            //   const oldPos = findBeacon(map, lastEntry.beacons[0]);
+            //   const newPos = findBeacon(map, thisDeviceEntry.beacons[1]);
+            //   console.log('old');
+            //   console.log(oldPos);
+            //   console.log('new');
+            //   console.log(newPos);
+            //   half.x = oldPos.x + (newPos.x - oldPos.x) / 2;
+            //   half.y = oldPos.y + (newPos.y - oldPos.y) / 2;
+            // }
             console.log('position query');
             const lastPos = positions[0];
             const movementVector = timeHeadingVector(heading, currentTime - lastEntry.date);
+            console.log('lastpos');
+            console.log(lastPos.position);
+            const xCandidate = lastPos.position.x + movementVector[0];
+            const yCandidate = lastPos.position.y + movementVector[1];
+            
+            // if it is within the respectable range of our beacons
+            // if we didn't transition beacons, or if we did but are still in range
+            if (!half.x || (within(xCandidate, half.x, 30) && within(yCandidate, half.y, 30))) {
+              return resolve({
+                x: xCandidate,
+                y: yCandidate,
+              });
+            }
             return resolve({
-              x: lastPos.position.x + movementVector[0],
-              y: lastPos.position.x + movementVector[1],
+              x: half.x,
+              y: half.y,
             });
           }).catch((err) => {
             console.log(err);
           });
         }
         console.log('shitty promise');
+        console.log(beacon);
         return resolve({
-          x: beaconInRange.x,
-          y: beaconInRange.y,
+          x: beacon.x,
+          y: beacon.y,
         });
       });
       return positionPromise.then((position) => {
