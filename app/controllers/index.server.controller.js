@@ -21,7 +21,7 @@ const degreesPerRadian = 0.0174533;
 
 const timeHeadingVector = function timeHeadingVector(heading, elapsedTime) {
   const headingInRadians = heading / degreesPerRadian;
-  const distanceScaler = walkingSpeed * elapsedTime;
+  const distanceScaler = walkingSpeed * elapsedTime/1000;
   console.log(headingInRadians);
   const vector = [
     Math.cos(headingInRadians) * distanceScaler,
